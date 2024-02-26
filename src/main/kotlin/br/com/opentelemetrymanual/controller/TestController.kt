@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 class TestController(
     private val serviceA: ServiceA,
     private val serviceB: ServiceB,
-    private val tracer: Tracer = openTelemetry().getTracer("TesteController")
+    private val tracer: Tracer = openTelemetry().getTracer(TestController::class.simpleName.toString())
 ) {
     @GetMapping()
     fun testOpenTelemetry(@RequestParam(required = false) service: String): Any {

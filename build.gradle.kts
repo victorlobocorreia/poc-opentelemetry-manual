@@ -23,6 +23,16 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("io.opentelemetry:opentelemetry-api")
+	implementation("io.opentelemetry:opentelemetry-sdk")
+	implementation("io.opentelemetry:opentelemetry-exporter-logging")
+	implementation("io.opentelemetry.semconv:opentelemetry-semconv:1.23.1-alpha")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("io.opentelemetry:opentelemetry-bom:1.35.0")
+	}
 }
 
 tasks.withType<KotlinCompile> {

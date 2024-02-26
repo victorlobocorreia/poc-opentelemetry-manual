@@ -39,3 +39,5 @@ class TestController(
         }
     }
 }
+
+// parei aqui https://opentelemetry.io/docs/languages/java/instrumentation/#create-nested-spans

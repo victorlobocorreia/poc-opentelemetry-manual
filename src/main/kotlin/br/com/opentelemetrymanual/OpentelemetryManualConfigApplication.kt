@@ -55,12 +55,7 @@ fun openTelemetry(): OpenTelemetry {
         .setResource(resource)
         .build()
 
-    val sdkLoggerProvider = SdkLoggerProvider.builder()
-        .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create()).build())
-        .setResource(resource)
-        .build()
-
-//    val sdkLoggerProvider = SdkLoggerProvider.builder()
+    //    val sdkLoggerProvider = SdkLoggerProvider.builder()
 //        .addLogRecordProcessor(
 //            BatchLogRecordProcessor.builder(  // https://opentelemetry.io/docs/languages/java/instrumentation/#logrecord-processor
 //                OtlpHttpLogRecordExporter.builder().setEndpoint("https://otlp.nr-data.net")
@@ -69,6 +64,11 @@ fun openTelemetry(): OpenTelemetry {
 //        )
 //        .setResource(resource)
 //        .build()
+
+    val sdkLoggerProvider = SdkLoggerProvider.builder()
+        .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create()).build())
+        .setResource(resource)
+        .build()
 
     val openTelemetry = OpenTelemetrySdk.builder()
         .setTracerProvider(sdkTracerProvider)

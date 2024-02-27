@@ -5,13 +5,14 @@ import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.context.propagation.TextMapPropagator
-import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter
 import io.opentelemetry.exporter.otlp.http.metrics.OtlpHttpMetricExporter
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter
+import io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.logs.SdkLoggerProvider
 import io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor
+import io.opentelemetry.sdk.logs.export.SimpleLogRecordProcessor
 import io.opentelemetry.sdk.metrics.SdkMeterProvider
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader
 import io.opentelemetry.sdk.resources.Resource
@@ -55,18 +56,12 @@ fun openTelemetry(): OpenTelemetry {
         .setResource(resource)
         .build()
 
-    //    val sdkLoggerProvider = SdkLoggerProvider.builder()
-//        .addLogRecordProcessor(
-//            BatchLogRecordProcessor.builder(  // https://opentelemetry.io/docs/languages/java/instrumentation/#logrecord-processor
-//                OtlpHttpLogRecordExporter.builder().setEndpoint("https://otlp.nr-data.net")
-//                    .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
-//            ).build()
-//        )
-//        .setResource(resource)
-//        .build()
-
     val sdkLoggerProvider = SdkLoggerProvider.builder()
-        .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create()).build())
+        .addLogRecordProcessor(
+            BatchLogRecordProcessor.builder(  // https://opentelemetry.io/docs/languages/java/instrumentation/#logrecord-processor
+                OtlpHttpLogRecordExporter.builder().setEndpoint("http://localhost:3100/loki/api/v1/push").build()
+            ).build()
+        )
         .setResource(resource)
         .build()
 
@@ -83,6 +78,8 @@ fun openTelemetry(): OpenTelemetry {
             )
         )
         .buildAndRegisterGlobal()
+
+    OpenTelemetryAppender.install(openTelemetry)
 
     return openTelemetry
 }

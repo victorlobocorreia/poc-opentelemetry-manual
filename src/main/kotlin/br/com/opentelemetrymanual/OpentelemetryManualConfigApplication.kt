@@ -5,7 +5,6 @@ import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.context.propagation.TextMapPropagator
-import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter
 import io.opentelemetry.exporter.otlp.http.metrics.OtlpHttpMetricExporter
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter
@@ -36,33 +35,27 @@ fun openTelemetry(): OpenTelemetry {
         .put(ResourceAttributes.SERVICE_NAME, "poc-opentelemetry-manual")
         .put(ResourceAttributes.SERVICE_VERSION, "0.1.0").build()
 
+    val traceExporter = OtlpHttpSpanExporter.builder().setEndpoint("https://otlp.nr-data.net:4318/v1/traces")
+        .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
+
     val sdkTracerProvider = SdkTracerProvider.builder()
-        .addSpanProcessor(
-            BatchSpanProcessor.builder(
-                OtlpHttpSpanExporter.builder().setEndpoint("https://otlp.nr-data.net:4318/v1/traces")
-                    .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
-            ).build()
-        )
+        .addSpanProcessor(BatchSpanProcessor.builder(traceExporter).build())
         .setResource(resource)
         .build()
+
+    val metricExporter = OtlpHttpMetricExporter.builder().setEndpoint("https://otlp.nr-data.net:4318/v1/metrics")
+        .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
 
     val sdkMeterProvider = SdkMeterProvider.builder()
-        .registerMetricReader(
-            PeriodicMetricReader.builder(
-                OtlpHttpMetricExporter.builder().setEndpoint("https://otlp.nr-data.net:4318/v1/metrics")
-                    .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
-            ).build()
-        )
+        .registerMetricReader(PeriodicMetricReader.builder(metricExporter).build())
         .setResource(resource)
         .build()
 
+    val logExporter = OtlpHttpLogRecordExporter.builder().setEndpoint("https://otlp.nr-data.net") //not working
+        .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
+
     val sdkLoggerProvider = SdkLoggerProvider.builder()
-        .addLogRecordProcessor(
-            BatchLogRecordProcessor.builder(
-                OtlpHttpLogRecordExporter.builder().setEndpoint("https://otlp.nr-data.net") //not working
-                    .addHeader("api-key", "c775892ce0ef53d2063f627439233e41FFFFNRAL").build()
-            ).build()
-        )
+        .addLogRecordProcessor(BatchLogRecordProcessor.builder(logExporter).build())
         .setResource(resource)
         .build()
 

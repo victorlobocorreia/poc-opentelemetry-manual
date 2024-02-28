@@ -28,6 +28,7 @@ dependencies {
 	implementation("io.opentelemetry:opentelemetry-exporter-logging")
 	implementation("io.opentelemetry.semconv:opentelemetry-semconv:1.23.1-alpha")
 	implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.35.0")
+	// para a configuração dos logs. fonte https://opentelemetry.io/docs/languages/java/instrumentation/#logs
 	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.1.0-alpha")
 }
 

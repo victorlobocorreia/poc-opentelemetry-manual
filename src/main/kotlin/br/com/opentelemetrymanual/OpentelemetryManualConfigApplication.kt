@@ -73,7 +73,7 @@ fun openTelemetry(): OpenTelemetry {
         )
         .buildAndRegisterGlobal()
 
-    OpenTelemetryAppender.install(openTelemetry)
+    OpenTelemetryAppender.install(openTelemetry) //para a configuração dos logs. fonte https://opentelemetry.io/docs/languages/java/instrumentation/#logs
 
     return openTelemetry
 }
